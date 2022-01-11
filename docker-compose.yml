@@ -1,0 +1,19 @@
+version: "2"
+
+services:
+  mariadb:
+    image: mariadb:10.3.32
+    platform: linux/x86_64
+    restart: unless-stopped
+    ports:
+      - 3307:3306
+    environment:
+      mariadb_ALLOW_EMPTY_PASSWORD: 1
+    volumes:
+      - mariadb:/var/lib/mariadb
+
+volumes:
+  mariadb:
+    driver_opts:
+      type: tmpfs
+      device: tmpfs

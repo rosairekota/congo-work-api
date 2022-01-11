@@ -1,0 +1,80 @@
+{
+  "name": "@rkota/congowork-api",
+  "version": "1.0.0",
+  "description": "Project Chef d'oeuvre: CongoWork",
+  "main": "index.js",
+  "scripts": {
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node dist/main",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "lint:fix": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "test": "jest --config=jest.json",
+    "test:watch": "jest --watch --config=jest.json",
+    "test:coverage": "jest --config=jest.json --coverage --coverageDirectory=coverage",
+    "test:e2e": "APIURL=http://localhost:3000/api ./e2e/run-api-tests.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rosairekota"
+  },
+  "author": {
+    "name":"rosaire kota",
+    "email":"rosairekota@gmail.com",
+    "username":"rkota"
+  },
+  "license": "MIT",
+  "homepage": "https://congowork.vercel.app",
+  "dependencies": {
+    "@mikro-orm/core": "^4.5.7",
+    "@mikro-orm/mariadb": "^4.5.10",
+    "@mikro-orm/mysql": "^4.5.7",
+    "@mikro-orm/nestjs": "^4.3.0",
+    "@mikro-orm/reflection": "^4.5.7",
+    "@mikro-orm/sql-highlighter": "^1.0.1",
+    "@nestjs/common": "^8.0.6",
+    "@nestjs/core": "^8.0.6",
+    "@nestjs/platform-express": "^8.2.4",
+    "@nestjs/swagger": "^5.0.9",
+    "class-transformer": "^0.4.0",
+    "class-validator": "^0.13.1",
+    "crypto": "^1.0.1",
+    "crypto-js": "^4.1.1",
+    "jsonwebtoken": "^8.5.1",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.3.0",
+    "slug": "^5.1.0",
+    "swagger-ui-express": "^4.1.6"
+  },
+  "devDependencies": {
+    "@mikro-orm/cli": "^4.5.7",
+    "@nestjs/cli": "^8.1.1",
+    "@nestjs/schematics": "^8.0.2",
+    "@nestjs/testing": "^8.0.6",
+    "@types/express": "^4.17.13",
+    "@types/jest": "^27.0.1",
+    "@types/node": "^14.11.2",
+    "@typescript-eslint/eslint-plugin": "^4.3.0",
+    "@typescript-eslint/parser": "^4.3.0",
+    "atob": ">=2.1.2",
+    "deep-extend": ">=0.6.0",
+    "eslint": "^7.10.0",
+    "eslint-plugin-import": "^2.22.1",
+    "extend": ">=3.0.2",
+    "jest": "^27.0.6",
+    "supertest": "^5.0.0",
+    "ts-jest": "^27.0.5",
+    "ts-node": "^10.0.0",
+    "typescript": "4.3.5"
+  },
+  "mikro-orm": {
+    "useTsNode": true,
+    "configPaths": [
+      "./src/mikro-orm.config.ts",
+      "./dist/mikro-orm.config.js"
+    ]
+  }
+}
