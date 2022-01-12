@@ -8,6 +8,11 @@ import { TagModule } from './tag/tag.module';
 import { UserModule } from './auth/user.module';
 import { FreelancerModule } from './freelancer/freelancer.module';
 import { CustomerModule } from './customer/customer.module';
+import { ProjectModule } from './project/project.module';
+import { FreelaningModule } from './freelaning/freelaning.module';
+import { SkillModule } from './skill/skill.module';
+import { CandidatureModule } from './candidature/candidature.module';
+
 import config from "../config/mikro-orm.config";
 
 @Module({
@@ -22,6 +27,10 @@ import config from "../config/mikro-orm.config";
     TagModule,
     FreelancerModule,
     CustomerModule,
+    ProjectModule,
+    FreelaningModule,
+    SkillModule,
+    CandidatureModule,
   ],
   providers: [],
 })
