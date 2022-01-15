@@ -8,12 +8,12 @@ import { UserModule } from './auth/user.module';
 import { ProjectModule } from './project/project.module';
 import { SkillModule } from './skill/skill.module';
 
-import config from "../config/mikro-orm.config";
+import config from "./mikro-orm.config";
 import { HelmetMiddleware } from '@nest-middlewares/helmet';
 import { TalentModule } from './talent/talent.module';
 import { ClientModule } from './client/client.module';
-import { ContactModule } from './contact/contact.module';
 import { ProfessionModule } from './profession/profession.module';
+import { LanguageModule } from './language/language.module';
 
 @Module({
   controllers: [
@@ -29,8 +29,8 @@ import { ProfessionModule } from './profession/profession.module';
     SkillModule,
     TalentModule,
     ClientModule,
-    ContactModule,
     ProfessionModule,
+    LanguageModule,
   ],
   providers: [],
 })
