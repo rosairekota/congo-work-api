@@ -1,18 +1,22 @@
+import { UserStatusEnum } from './../shared/enums/user-status-enum';
+import { UserRoleEnum } from './../shared/enums/user-role.enum';
 import { IsEmail } from 'class-validator';
 import crypto from 'crypto';
 import {
   Collection,
   Entity,
   EntityRepositoryType,
+  Enum,
   ManyToMany,
   OneToMany,
   PrimaryKey,
   Property,
+  Unique,
   wrap,
 } from '@mikro-orm/core';
 import { Article } from '../post/article.entity';
 import { UserRepository } from './user.repository';
-
+@Unique({properties:["email"]})
 @Entity()
 export class User {
 
@@ -22,11 +26,23 @@ export class User {
   id: number;
 
   @Property()
+  firstName:string;
+  
+  @Property()
+  lastName:string;
+
+  @Property()
   username: string;
 
   @Property({ hidden: true })
   @IsEmail()
   email: string;
+
+  @Property({ hidden: true })
+  password: string;
+
+  @Property()
+  saltSecret: string;
 
   @Property()
   bio = '';
@@ -34,8 +50,13 @@ export class User {
   @Property()
   image = '';
 
-  @Property({ hidden: true })
-  password: string;
+ 
+
+  @Enum()
+  roles=new Collection<UserRoleEnum>(this)
+
+  @Enum()
+  status!: UserStatusEnum;
 
   @ManyToMany({ hidden: false })
   favorites = new Collection<Article>(this);

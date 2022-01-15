@@ -1,19 +1,19 @@
-import { Module, NestMiddleware, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AppController } from './app.controller';
 import { ArticleModule } from './post/article.module';
 import { ProfileModule } from './profile/profile.module';
 import { TagModule } from './tag/tag.module';
 import { UserModule } from './auth/user.module';
-import { FreelancerModule } from './freelancer/freelancer.module';
-import { CustomerModule } from './customer/customer.module';
 import { ProjectModule } from './project/project.module';
-import { FreelaningModule } from './matching/freelaning.module';
 import { SkillModule } from './skill/skill.module';
-import { CandidatureModule } from './candidature/candidature.module';
 
 import config from "../config/mikro-orm.config";
 import { HelmetMiddleware } from '@nest-middlewares/helmet';
+import { TalentModule } from './talent/talent.module';
+import { ClientModule } from './client/client.module';
+import { ContactModule } from './contact/contact.module';
+import { ProfessionModule } from './profession/profession.module';
 
 @Module({
   controllers: [
@@ -25,12 +25,12 @@ import { HelmetMiddleware } from '@nest-middlewares/helmet';
     UserModule,
     ProfileModule,
     TagModule,
-    FreelancerModule,
-    CustomerModule,
     ProjectModule,
-    FreelaningModule,
     SkillModule,
-    CandidatureModule,
+    TalentModule,
+    ClientModule,
+    ContactModule,
+    ProfessionModule,
   ],
   providers: [],
 })
