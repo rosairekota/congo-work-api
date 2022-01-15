@@ -12,7 +12,7 @@ export class Profession {
   title: string;
 
   @Property()
-  description: string;
+  description?: string;
   
   @Property()
   experience: string;

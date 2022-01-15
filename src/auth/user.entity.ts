@@ -45,18 +45,16 @@ export class User {
   saltSecret: string;
 
   @Property()
-  bio = '';
+  bio? :string='';
 
   @Property()
-  image = '';
+  profilePhoto? :string='';
 
- 
+  @Enum({ default:UserRoleEnum.ROLE_CLIENT })
+  roles:UserStatusEnum[];
 
-  @Enum()
-  roles=new Collection<UserRoleEnum>(this)
-
-  @Enum()
-  status!: UserStatusEnum;
+  @Enum({ default:UserStatusEnum.DISABLED })
+  status?: UserStatusEnum;
 
   @ManyToMany({ hidden: false })
   favorites = new Collection<Article>(this);
@@ -78,7 +76,7 @@ export class User {
 
   toJSON(user?: User) {
     const o = wrap(this).toObject();
-    o.image = this.image || 'https://static.productionready.io/images/smiley-cyrus.jpg';
+    o.profilePhoto = this.profilePhoto || 'https://static.productionready.io/images/smiley-cyrus.jpg';
     o.following = user && user.followers.isInitialized() ? user.followers.contains(this) : false; // TODO or followed?
 
     return o;

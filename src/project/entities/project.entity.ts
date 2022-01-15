@@ -20,7 +20,7 @@ export class Project {
     githubLink?:string;
 
     @Property({name:"website_link"})
-    websiteLink:string;
+    websiteLink?:string;
 
     @ManyToMany(() => Talent, (talent) => talent.projects)
     talents:Collection<Talent> =new Collection<Talent>(this)

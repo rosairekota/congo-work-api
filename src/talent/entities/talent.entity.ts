@@ -11,20 +11,17 @@ export class Talent {
     @PrimaryKey()
     id:number
 
-    @Property({name:"profile_photo"})
-    profilePhoto?:string
-
     @Property()
-    education:string
+    education?:string
 
     @Property({name:"github_link"})
     githubLink?:string;
 
     @Property({name:"website_link"})
-    websiteLink:string;
+    websiteLink?:string;
     
     @Property()
-    location:string;
+    location?:string;
     
     @Property()
     phone:string

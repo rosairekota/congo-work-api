@@ -83,6 +83,20 @@ export class UserService {
     return this.buildUserRO(user);
   }
 
+  async login(loginUserDto: LoginUserDto):Promise<IUserRO>{
+
+    const foundUser = await this.userRepository.findOne(loginUserDto);
+
+    const errors = { User: ' not found' };
+    if (!foundUser) {
+      throw new HttpException({ errors }, 401);
+    }
+    const token = await this.generateJWT(foundUser);
+    const { email, username, bio, profilePhoto } = foundUser;
+    const user = { email, token, username, bio, profilePhoto };
+    return {user}
+  }
+  
   generateJWT(user) {
     const today = new Date();
     const exp = new Date(today);
@@ -100,7 +114,7 @@ export class UserService {
     const userRO = {
       bio: user.bio,
       email: user.email,
-      image: user.image,
+      profilePhoto: user.profilePhoto,
       token: this.generateJWT(user),
       username: user.username,
     };
