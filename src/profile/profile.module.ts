@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
-import { AuthMiddleware } from '../auth/auth.middleware';
+import { AuthMiddleware } from '../middleware/auth.middleware';
 import { User } from '../auth/user.entity';
 import { UserModule } from '../auth/user.module';
 import { ProfileController } from './profile.controller';
