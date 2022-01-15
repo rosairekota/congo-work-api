@@ -9,8 +9,8 @@ export class Project {
     @Property()
     title:string
 
-    @Property()
     description?:string
+    @Property()
 
     @Property({name:"image_url"})
     imageUrl?:string

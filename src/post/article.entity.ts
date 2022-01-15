@@ -2,10 +2,11 @@ import { ArrayType, Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Proper
 import slug from 'slug';
 
 import { User } from '../auth/user.entity';
+import TimesTempEntity from '../shared/timestemp.entity';
 import { Comment } from './comment.entity';
 
 @Entity()
-export class Article {
+export class Article extends TimesTempEntity{
 
   @PrimaryKey()
   id: number;
@@ -22,12 +23,6 @@ export class Article {
   @Property()
   body = '';
 
-  @Property()
-  createdAt = new Date();
-
-  @Property({ onUpdate: () => new Date() })
-  updatedAt = new Date();
-
   @Property({ type: ArrayType })
   tagList: string[] = [];
 
@@ -41,6 +36,7 @@ export class Article {
   favoritesCount = 0;
 
   constructor(author: User, title: string, description: string, body: string) {
+    super()
     this.author = author;
     this.title = title;
     this.description = description;
