@@ -3,10 +3,12 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const appOptions = { cors: true };
-  const app = await NestFactory.create(AppModule, appOptions);
-  app.setGlobalPrefix('api');
+  
+  const app = await NestFactory.create(AppModule);
+  const corsOptions = { origin:['http://localhost:3005'] };
+  app.enableCors(corsOptions)
 
+  app.setGlobalPrefix('api');
   const options = new DocumentBuilder()
     .setTitle('API Congo Work')
     .setDescription("Description de l'API Congo Work")

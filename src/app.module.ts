@@ -1,6 +1,5 @@
-import { Module } from '@nestjs/common';
+import { Module, NestMiddleware, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-
 import { AppController } from './app.controller';
 import { ArticleModule } from './post/article.module';
 import { ProfileModule } from './profile/profile.module';
@@ -14,6 +13,7 @@ import { SkillModule } from './skill/skill.module';
 import { CandidatureModule } from './candidature/candidature.module';
 
 import config from "../config/mikro-orm.config";
+import { HelmetMiddleware } from '@nest-middlewares/helmet';
 
 @Module({
   controllers: [
@@ -34,4 +34,9 @@ import config from "../config/mikro-orm.config";
   ],
   providers: [],
 })
-export class AppModule { }
+export class AppModule implements NestModule{ 
+  configure(consummer:MiddlewareConsumer){
+    // xss protected=helmet middleware
+    consummer.apply(HelmetMiddleware).forRoutes('')
+  }
+}

@@ -20,9 +20,9 @@
     "url": "https://github.com/rosairekota"
   },
   "author": {
-    "name":"rosaire kota",
-    "email":"rosairekota@gmail.com",
-    "username":"rkota"
+    "name": "rosaire kota",
+    "email": "rosairekota@gmail.com",
+    "username": "rkota"
   },
   "license": "MIT",
   "homepage": "https://congowork.vercel.app",
@@ -33,6 +33,9 @@
     "@mikro-orm/nestjs": "^4.3.0",
     "@mikro-orm/reflection": "^4.5.7",
     "@mikro-orm/sql-highlighter": "^1.0.1",
+    "@nest-middlewares/cors": "^6.0.1",
+    "@nest-middlewares/helmet": "^6.0.0",
+    "@nest-middlewares/morgan": "^6.0.0",
     "@nestjs/common": "^8.0.6",
     "@nestjs/core": "^8.0.6",
     "@nestjs/mapped-types": "*",
