@@ -9,7 +9,7 @@ import { UserModule } from './auth/user.module';
 import { FreelancerModule } from './freelancer/freelancer.module';
 import { CustomerModule } from './customer/customer.module';
 import { ProjectModule } from './project/project.module';
-import { FreelaningModule } from './freelaning/freelaning.module';
+import { FreelaningModule } from './matching/freelaning.module';
 import { SkillModule } from './skill/skill.module';
 import { CandidatureModule } from './candidature/candidature.module';
 
