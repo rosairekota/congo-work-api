@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { validate } from 'class-validator';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
@@ -87,9 +87,9 @@ export class UserService {
 
     const foundUser = await this.userRepository.findOne(loginUserDto);
 
-    const errors = { User: ' not found' };
+    const errors = { User: " n'a pas été trouvé !" };
     if (!foundUser) {
-      throw new HttpException({ errors }, 401);
+      throw new NotFoundException({ errors }, '401');
     }
     const token = await this.generateJWT(foundUser);
     const { email, username, bio, profilePhoto } = foundUser;

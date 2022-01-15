@@ -12,34 +12,34 @@ import {
 
 @ApiBearerAuth()
 @ApiTags('user')
-@Controller()
+@Controller('users')
 export class UserController {
 
   constructor(private readonly userService: UserService) {}
 
-  @Get('user')
+  @Get()
   async findMe(@User('email') email: string): Promise<IUserRO> {
     return this.userService.findByEmail(email);
   }
 
-  @Put('user')
+  @Put()
   async update(@User('id') userId: number, @Body('user') userData: UpdateUserDto) {
     return this.userService.update(userId, userData);
   }
 
   @UsePipes(new ValidationPipe())
-  @Post('users')
+  @Post('register')
   async create(@Body('user') userData: CreateUserDto) {
     return this.userService.create(userData);
   }
 
-  @Delete('users/:slug')
+  @Delete(':slug')
   async delete(@Param() params) {
     return this.userService.delete(params.slug);
   }
 
   @UsePipes(new ValidationPipe())
-  @Post('users/login')
+  @Post('login')
   async login(@Body('user') loginUserDto: LoginUserDto): Promise<IUserRO> {
     
     return await this.userService.login(loginUserDto);
