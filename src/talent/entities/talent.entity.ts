@@ -2,6 +2,7 @@ import { Collection, Entity, ManyToMany, ManyToOne, OneToOne, PrimaryKey, Proper
 import { User } from "../../auth/user.entity";
 import { Language } from "../../language/entities/language.entity";
 import { Profession } from "../../profession/entities/profession.entity";
+import { Project } from "../../project/entities/project.entity";
 
 @Entity()
 @Unique({properties:['phone']})
@@ -26,7 +27,7 @@ export class Talent {
     location:string;
     
     @Property()
-    phone
+    phone:string
 
     @OneToOne(()=> User)
     user:User
@@ -35,6 +36,9 @@ export class Talent {
     @ManyToOne()
     profession:Profession
 
-    @ManyToMany({entity:()=>Language,pivotTable:"language_talent"})
+    @ManyToMany({entity:()=>Language, owner: true, pivotTable:"language_talent"})
     languages:Collection<Language> = new Collection<Language>(this)
+
+    @ManyToMany({entity:()=>Project, owner:true, pivotTable:"project_talent"})
+    projects:Collection<Project> = new Collection<Project>(this)
 }

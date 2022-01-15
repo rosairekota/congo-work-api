@@ -1,4 +1,5 @@
-import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
+import { Collection, Entity, ManyToMany, PrimaryKey, Property } from "@mikro-orm/core";
+import { Talent } from "../../talent/entities/talent.entity";
 
 @Entity()
 export class Project {
@@ -20,6 +21,9 @@ export class Project {
 
     @Property({name:"website_link"})
     websiteLink:string;
+
+    @ManyToMany(() => Talent, (talent) => talent.projects)
+    talents:Collection<Talent> =new Collection<Talent>(this)
 
 
 }

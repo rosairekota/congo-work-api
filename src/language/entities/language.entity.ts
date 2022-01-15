@@ -1,6 +1,6 @@
 import { Talent } from './../../talent/entities/talent.entity';
-import { Collection, ManyToMany, PrimaryKey, Property } from "@mikro-orm/core";
-
+import { Collection, Entity, ManyToMany, PrimaryKey, Property } from "@mikro-orm/core";
+@Entity()
 export class Language {
     @PrimaryKey()
     id:string
@@ -8,6 +8,6 @@ export class Language {
     @Property()
     title:string
 
-    @ManyToMany(()=>Talent)
-    talents:Collection<Talent> = new Collection<Talent>(this)
+    @ManyToMany(()=>Talent,(talent)=>talent.languages)
+    talents = new Collection<Talent>(this)
 }
