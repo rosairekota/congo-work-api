@@ -27,6 +27,7 @@
   "license": "MIT",
   "homepage": "https://congowork.vercel.app",
   "dependencies": {
+    "dotenv": "^10.0.0",
     "@mikro-orm/core": "^4.5.7",
     "@mikro-orm/mariadb": "^4.5.10",
     "@mikro-orm/mysql": "^4.5.7",
@@ -37,6 +38,7 @@
     "@nest-middlewares/helmet": "^6.0.0",
     "@nest-middlewares/morgan": "^6.0.0",
     "@nestjs/common": "^8.0.6",
+    "@nestjs/config": "^1.1.6",
     "@nestjs/core": "^8.0.6",
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^8.2.4",
