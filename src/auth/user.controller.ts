@@ -29,7 +29,7 @@ export class UserController {
 
   @UsePipes(new ValidationPipe())
   @Post('register')
-  async create(@Body('user') userData: CreateUserDto) {
+  async register(@Body('user') userData: CreateUserDto) {
     return this.userService.create(userData);
   }
 
@@ -42,6 +42,6 @@ export class UserController {
   @Post('login')
   async login(@Body('user') loginUserDto: LoginUserDto): Promise<IUserRO> {
     
-    return await this.userService.login(loginUserDto);
+    return await this.userService.authenticate(loginUserDto);
   }
 }

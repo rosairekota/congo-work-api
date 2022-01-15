@@ -1,13 +1,13 @@
 import { IUserData } from './../auth/user.interface';
 import { SECRET } from './../../config';
-import { jwt } from 'jsonwebtoken';
+import { JwtService } from '@nestjs/jwt';
 import { HttpStatus, Injectable, NestMiddleware, HttpException } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { UserService } from '../auth/user.service';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  constructor(private readonly authService:UserService){
+  constructor(private readonly authService:UserService,private jwtService: JwtService){
 
   }
   async use(req: Request &  { user?: IUserData & { id?: number } }, res: Response, next:NextFunction ) {
@@ -15,7 +15,7 @@ export class AuthMiddleware implements NestMiddleware {
     console.log("authentification")
     if (authHeaders && (authHeaders as string).split(' ')[1]) {
       const token = (authHeaders as string).split(' ')[1];
-      const decoded: any = jwt.verify(token, SECRET);
+      const decoded: any = this.jwtService.verify(token, {secret:SECRET});
       const user = await this.authService.findById(decoded.id);
 
       if (!user) {

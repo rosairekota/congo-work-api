@@ -1,7 +1,7 @@
 export interface IProfileData {
   username: string;
   bio: string;
-  image?: string;
+  profilePhoto?: string;
   following?: boolean;
 }
 

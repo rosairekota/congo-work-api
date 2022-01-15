@@ -1,5 +1,5 @@
 import { Collection, Entity, ManyToMany, ManyToOne, OneToOne, PrimaryKey, Property, Unique } from "@mikro-orm/core";
-import { User } from "../../auth/user.entity";
+import { User } from "../../auth/entities/user.entity";
 import { Language } from "../../language/entities/language.entity";
 import { Profession } from "../../profession/entities/profession.entity";
 import { Project } from "../../project/entities/project.entity";

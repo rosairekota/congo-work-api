@@ -3,10 +3,10 @@ import { QueryOrder, wrap } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs'
 import { EntityRepository } from '@mikro-orm/mariadb';
 
-import { User } from '../auth/user.entity';
-import { Article } from './article.entity';
+import { User } from '../auth/entities/user.entity';
+import { Article } from './entities/article.entity';
 import { IArticleRO, IArticlesRO, ICommentsRO } from './article.interface';
-import { Comment } from './comment.entity';
+import { Comment } from './entities/comment.entity';
 import { CreateArticleDto, CreateCommentDto } from './dto';
 
 @Injectable()

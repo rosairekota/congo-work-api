@@ -1,5 +1,5 @@
-import { UserStatusEnum } from './../shared/enums/user-status-enum';
-import { UserRoleEnum } from './../shared/enums/user-role.enum';
+import { Role } from './user-role.entity';
+import { UserStatusEnum } from '../../shared/enums/user-status-enum';
 import { IsEmail } from 'class-validator';
 import crypto from 'crypto';
 import {
@@ -14,8 +14,8 @@ import {
   Unique,
   wrap,
 } from '@mikro-orm/core';
-import { Article } from '../post/article.entity';
-import { UserRepository } from './user.repository';
+import { Article } from '../../post/entities/article.entity';
+import { UserRepository } from '../user.repository';
 @Unique({properties:["email"]})
 @Entity()
 export class User {
@@ -50,8 +50,8 @@ export class User {
   @Property()
   profilePhoto? :string='';
 
-  @Enum({ default:UserRoleEnum.ROLE_CLIENT })
-  roles:UserStatusEnum[];
+  @ManyToMany({entity:() => Role,owner:true,pivotTable:"user_roles"})
+  roles:Collection<Role> =new Collection<Role>(this);
 
   @Enum({ default:UserStatusEnum.DISABLED })
   status?: UserStatusEnum;
@@ -67,12 +67,6 @@ export class User {
 
   @OneToMany(() => Article, article => article.author, { hidden: true })
   articles = new Collection<Article>(this);
-
-  constructor(username: string, email: string, password: string) {
-    this.username = username;
-    this.email = email;
-    this.password = crypto.createHmac('sha256', password).digest('hex');
-  }
 
   toJSON(user?: User) {
     const o = wrap(this).toObject();

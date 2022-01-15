@@ -1,8 +1,8 @@
 import { ArrayType, Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property, wrap } from '@mikro-orm/core';
 import slug from 'slug';
 
-import { User } from '../auth/user.entity';
-import TimesTempEntity from '../shared/timestemp.entity';
+import { User } from '../../auth/entities/user.entity';
+import TimesTempEntity from '../../shared/timestemp.entity';
 import { Comment } from './comment.entity';
 
 @Entity()
