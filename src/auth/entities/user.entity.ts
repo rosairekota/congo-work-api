@@ -68,6 +68,12 @@ export class User {
   @OneToMany(() => Article, article => article.author, { hidden: true })
   articles = new Collection<Article>(this);
 
+  constructor(username: string, email: string, password: string) {
+    this.username = username;
+    this.email = email;
+    this.password = crypto.createHmac('sha256', password).digest('hex');
+  }
+
   toJSON(user?: User) {
     const o = wrap(this).toObject();
     o.profilePhoto = this.profilePhoto || 'https://static.productionready.io/images/smiley-cyrus.jpg';

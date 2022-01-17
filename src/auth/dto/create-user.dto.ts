@@ -1,22 +1,22 @@
 import { Role } from './../entities/user-role.entity';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty,IsString } from 'class-validator';
 
 export class CreateUserDto {
 
   @IsNotEmpty()
-  readonly firstName :string
+  firstName :string
 
   @IsNotEmpty()
-  readonly lastName :string
+  lastName :string
 
   @IsNotEmpty()
-  readonly username: string;
+  username: string;
 
   @IsNotEmpty()
-  readonly email: string;
+  email: string;
 
   @IsNotEmpty()
-  readonly password: string;
+  password: string;
 
   @IsNotEmpty()
   roles:[]

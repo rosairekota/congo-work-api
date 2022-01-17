@@ -1,3 +1,4 @@
+import { JwtService } from '@nestjs/jwt';
 
 import {
   ConflictException,
@@ -7,9 +8,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { validate } from 'class-validator';
-import crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import { wrap } from '@mikro-orm/core';
 import { SECRET } from '../../config';
 import { CreateUserDto, LoginUserDto, UpdateUserDto } from './dto';
@@ -20,7 +19,7 @@ import { UserRoleEnum } from '../shared/enums/user-role.enum';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(private readonly userRepository: UserRepository, private readonly jwtService:JwtService) {}
 
   async findAll(): Promise<User[]> {
     return this.userRepository.findAll();
@@ -29,17 +28,18 @@ export class UserService {
   async findOne(loginUserDto: LoginUserDto): Promise<User> {
     const findOneOptions = {
       email: loginUserDto.email,
-      password: crypto
-        .createHmac('sha256', loginUserDto.password)
-        .digest('hex'),
+      password: await this.encryptPassword(loginUserDto.password)
+
     };
 
     return this.userRepository.findOne(findOneOptions);
   }
 
   async create(dto: CreateUserDto): Promise<IUserRO> {
-    // check uniqueness of username/email
+  
+    // check uniquen,ss of username/email
     const { firstName, lastName, username, email, password, roles } = dto;
+    console.log("dto : ",{ firstName, lastName, username, email, password, roles })
     const exists = await this.userRepository.count({
       $or: [{ username }, { email }],
     });
@@ -59,7 +59,7 @@ export class UserService {
       ...{ firstName, lastName, username, email, password },
     });
     user.saltSecret = await bcrypt.genSalt();
-    user.password = await bcrypt.hash(user.password, user.saltSecret);
+    user.password = await this.encryptPassword(user.password,user.saltSecret)
     user.roles.add(...roles)
 
     const errors = await validate(user);
@@ -144,14 +144,14 @@ export class UserService {
     const exp = new Date(today);
     exp.setDate(today.getDate() + 60);
 
-    return jwt.sign(
+    return this.jwtService.sign(
       {
         email: user.email,
         exp: exp.getTime() / 1000,
         id: user.id,
         username: user.username,
       },
-      SECRET,
+      {secret: SECRET},
     );
   }
 
@@ -165,5 +165,17 @@ export class UserService {
     };
 
     return { user: userRO };
+  }
+   private async encryptPassword(password: string,salt?: string):Promise<string>{
+    const saltSecret = await bcrypt.genSalt();
+    let hashPassword="";
+    if (salt !=="") {
+      hashPassword = await bcrypt.hash(password, salt);
+    }
+    else {
+      hashPassword = await bcrypt.hash(password, saltSecret);
+    }
+   
+    return hashPassword;
   }
 }

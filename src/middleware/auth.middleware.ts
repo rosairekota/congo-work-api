@@ -7,7 +7,7 @@ import { UserService } from '../auth/user.service';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  constructor(private readonly authService:UserService,private jwtService: JwtService){
+  constructor(private readonly authService:UserService,private readonly jwtService :JwtService){
 
   }
   async use(req: Request &  { user?: IUserData & { id?: number } }, res: Response, next:NextFunction ) {
@@ -15,7 +15,7 @@ export class AuthMiddleware implements NestMiddleware {
     console.log("authentification")
     if (authHeaders && (authHeaders as string).split(' ')[1]) {
       const token = (authHeaders as string).split(' ')[1];
-      const decoded: any = this.jwtService.verify(token, {secret:SECRET});
+      const decoded: any = this.jwtService.verify(token, {secret: SECRET});
       const user = await this.authService.findById(decoded.id);
 
       if (!user) {

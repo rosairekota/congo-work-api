@@ -13,12 +13,7 @@ export class Profession {
 
   @Property()
   description?: string;
-  
-  @Property()
-  experience: string;
 
-  @Property()
-  level:string;
   @OneToMany(()=>Skill,(skill) => skill.profession)
   skills = new Collection<Skill>(this);
 

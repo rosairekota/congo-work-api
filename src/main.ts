@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 
 dotenv.config();
 async function bootstrap() {
@@ -13,6 +14,18 @@ async function bootstrap() {
  
 
   app.setGlobalPrefix('api');
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
+  app.enableVersioning({
+    type: VersioningType.URI,
+  });
+
+
   const options = new DocumentBuilder()
     .setTitle('API Congo Work')
     .setDescription("Description de l'API Congo Work")
