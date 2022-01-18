@@ -22,10 +22,10 @@ export class Talent {
   id: number;
 
   @Property()
-  experience: string;
+  experience?: string;
 
   @Property()
-  level: string;
+  level?: string;
 
   @Property()
   education?: string;
@@ -40,7 +40,7 @@ export class Talent {
   location?: string;
 
   @Property()
-  phone: string;
+  phone?: string;
 
   @Enum({ default: UserStatusEnum.ACTIVE })
   availability: UserStatusEnum;

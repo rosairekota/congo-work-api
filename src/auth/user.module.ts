@@ -11,20 +11,22 @@ import { UserService } from './user.service';
 import { MikroOrmModule } from '@mikro-orm/nestjs'
 import {PassportModule} from "@nestjs/passport"
 import {JwtStrategy} from "./strategy/jwt.strategy"
+import { Profession } from '../profession/entities/profession.entity';
+import { Talent } from '../talent/entities/talent.entity';
+import { Client } from '../client/entities/client.entity';
 
 @Module({
   controllers: [
     UserController,
   ],
   exports: [UserService,PassportModule,JwtModule],
-  imports: [MikroOrmModule.forFeature({ entities: [User,UserRole] }), 
+  imports: [MikroOrmModule.forFeature({ entities: [User,UserRole,Profession,Talent,Client] }), 
   // JWT configurations
   PassportModule.register({
     defaultStrategy: 'jwt',
   }),
   JwtModule.register({
     secret: SECRET,
-    signOptions: { expiresIn: '60s' },
   }),
   ConfigModule.forRoot({
     isGlobal: true,

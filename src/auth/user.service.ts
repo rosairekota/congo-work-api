@@ -1,3 +1,4 @@
+import { Role } from './entities/user-role.entity';
 import { UserRoleEnum } from './../shared/enums/user-role.enum';
 import { JwtService } from '@nestjs/jwt';
 
@@ -9,18 +10,25 @@ import {
 } from '@nestjs/common';
 import { validate } from 'class-validator';
 import * as bcrypt from 'bcrypt';
-import { wrap } from '@mikro-orm/core';
+import { Collection, wrap } from '@mikro-orm/core';
 import { SECRET } from '../../config';
 import { CreateUserDto, LoginUserDto, UpdateUserDto } from './dto';
 import { User } from './entities/user.entity';
 import { IUserRO } from './user.interface';
 import { UserRepository } from './repositories/user.repository';
 import { RoleRepository } from './repositories/role.repository';
-
+import { TalentRepository } from '../talent/repositories/talent.repository';
+import { ProfessionRepository } from '../profession/repositories/profession.repository';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository, private readonly roleRepository:RoleRepository,private readonly jwtService:JwtService) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly roleRepository: RoleRepository,
+    private readonly talentRepository: TalentRepository,
+    private readonly professionRepository: ProfessionRepository,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async findAll(): Promise<User[]> {
     return await this.userRepository.findAll();
@@ -29,81 +37,101 @@ export class UserService {
   async findOne(loginUserDto: LoginUserDto): Promise<User> {
     const findOneOptions = {
       email: loginUserDto.email,
-      password: await this.encryptPassword(loginUserDto.password)
-
+      password: await this.encryptPassword(loginUserDto.password),
     };
 
     return this.userRepository.findOne(findOneOptions);
   }
 
   async create(dto: CreateUserDto): Promise<IUserRO> {
-  
     // check uniquen,ss of username/email
-    const { firstName, lastName, username, email, password, role } = dto;
-  
-    const roles= []
-    for (const item of role) {
-      roles.push(await this.roleRepository.findByName(item))
-    }
+    const {
+      firstName,
+      lastName,
+      username,
+      email,
+      password,
+      roles,
+      profession,
+      
+    } = dto;
     
-    const exists = await this.userRepository.count({
-      $or: [{ username }, { email }],
-    });
+      const userRoles = [];
+      for (const item of roles) {
+        userRoles.push(await this.roleRepository.findByName(item));
+      }
 
-    if (exists > 0) {
-      throw new HttpException(
-        {
-          message: 'Echec de la validation des datas',
-          errors: { username: 'Username et email doivent etre unique.' },
-        },
-        HttpStatus.BAD_REQUEST,
+      const exists = await this.userRepository.count({
+        $or: [{ username }, { email }],
+      });
+
+      if (exists > 0) {
+        throw new HttpException(
+          {
+            message: 'Echec de la validation des données!',
+            errors: { username: 'Username et email doivent être unique.' },
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      // create new user
+      const user = this.userRepository.create({
+        ...{ firstName, lastName, username, email, password },
+      });
+      user.saltSecret = await bcrypt.genSalt();
+      user.password = await this.encryptPassword(
+        user.password,
+        user.saltSecret,
       );
-    }
+      if (roles.length > 0) {
+        user.roles.add(...userRoles);
+      }
 
-    // create new user
-    const user = this.userRepository.create({
-      ...{ firstName, lastName, username, email, password },
-    });
-    user.saltSecret = await bcrypt.genSalt();
-    user.password = await this.encryptPassword(user.password,user.saltSecret)
-    if (roles.length>0) {
-      user.roles.add(...roles)
-    }
-   
-    const errors = await validate(user);
+      const errors = await validate(user);
 
-    if (errors.length > 0) {
-      throw new HttpException(
+      if (errors.length > 0) {
+        throw new HttpException(
+          {
+            message: 'Echec de la validation !',
+            errors: { username: 'valeur invalide.' },
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      } else {
+      try 
         {
-          message: 'Input data validation failed',
-          errors: { username: 'Userinput is not valid.' },
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    } else {
-      try {
-        // for (const role of roles) {
-        //   switch (role) {
-        //     case UserRoleEnum.ROLE_TALENT:
-        //       const talent=new Talent() 
-        //            await this.userRepository.persistAndFlush([user,talent]);
-        //       break;
-        //     case UserRoleEnum.ROLE_CLIENT:
-        //       break;
-        //     case UserRoleEnum.ROLE_ADMIN||UserRoleEnum.ROLE_SUPER_ADMIN:
-        //       break;
-        //     default:
-        //       break;
-        //   }
-        // }
-        await this.userRepository.persistAndFlush(user);
+        for (const role of roles) {
+          switch (role) {
+            case UserRoleEnum.ROLE_TALENT:
+              const professionRepo =
+              await this.professionRepository.finbByTitle(profession.title);
+              const talent = this.talentRepository.create({});
+              talent.profession = professionRepo;
+              talent.user = user;
+              await this.talentRepository.persistAndFlush([user,talent]);
+              console.log('esimbi', professionRepo.id);
+              break;
+
+            case UserRoleEnum.ROLE_CLIENT:
+              await this.userRepository.persistAndFlush([user]);
+              break;
+
+            default:
+              await this.userRepository.persistAndFlush(user);
+              break;
+          }
+        }
 
         return this.buildUserRO(user);
-      } catch (error) {
-         throw new Error("Une erreur est survenue lors de la creation d'un utilisateur");
-         
       }
-    }
+      catch (e) {
+        throw new Error("Echec: Un problème a été constaté lors de la création d'un utilisateur"+e);
+        
+     } 
+     } 
+     
+   
   }
 
   async update(id: number, dto: UpdateUserDto) {
@@ -135,8 +163,8 @@ export class UserService {
   }
 
   async authenticate(loginUserDto: LoginUserDto): Promise<IUserRO> {
-    const {email:email_one,password}=loginUserDto
-    const hashPassword=await this.encryptPassword(password);
+    const { email: email_one, password } = loginUserDto;
+    const hashPassword = await this.encryptPassword(password);
     const foundUser = await this.userRepository.findOne(loginUserDto);
 
     const errors = { User: " n'a pas été trouvé !" };
@@ -161,7 +189,7 @@ export class UserService {
         id: user.id,
         username: user.username,
       },
-      {secret: SECRET},
+      { secret: SECRET },
     );
   }
 
@@ -172,20 +200,23 @@ export class UserService {
       profilePhoto: user.profilePhoto,
       token: this.generateJWT(user),
       username: user.username,
+      roles: user.roles,
     };
 
     return { user: userRO };
   }
-   private async encryptPassword(password: string,salt?: string):Promise<string>{
+  private async encryptPassword(
+    password: string,
+    salt?: string,
+  ): Promise<string> {
     const saltSecret = await bcrypt.genSalt();
-    let hashPassword="";
-    if (salt !=="") {
+    let hashPassword = '';
+    if (salt !== '') {
       hashPassword = await bcrypt.hash(password, salt);
-    }
-    else {
+    } else {
       hashPassword = await bcrypt.hash(password, saltSecret);
     }
-   
+
     return hashPassword;
   }
 }

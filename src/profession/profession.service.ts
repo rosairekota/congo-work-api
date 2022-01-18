@@ -2,7 +2,7 @@ import { Profession } from './entities/profession.entity';
 import { Injectable } from '@nestjs/common';
 import { CreateProfessionDto } from './dto/create-profession.dto';
 import { UpdateProfessionDto } from './dto/update-profession.dto';
-import { ProfessionRepository } from "./profession.repository";
+import { ProfessionRepository } from "./repositories/profession.repository";
 @Injectable()
 export class ProfessionService {
   constructor(private readonly professionRepository:ProfessionRepository){}
