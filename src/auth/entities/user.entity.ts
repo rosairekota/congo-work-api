@@ -1,3 +1,4 @@
+import { UserGenderEnum } from './../../shared/enums/user-gender.enum';
 import { Role } from './user-role.entity';
 import { UserStatusEnum } from '../../shared/enums/user-status-enum';
 import { IsEmail } from 'class-validator';
@@ -46,7 +47,10 @@ export class User {
 
   @Property()
   bio? :string;
-
+  
+  @Property({default:UserGenderEnum.GENDER_UNSPECIFIED})
+  gender:UserGenderEnum
+  
   @Property()
   profilePhoto? :string;
 
