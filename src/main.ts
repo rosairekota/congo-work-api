@@ -7,10 +7,10 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 dotenv.config();
 async function bootstrap() {
   
-  const app = await NestFactory.create(AppModule);
-  const corsOptions = { origin:[process.env.URL_ACCESS_RESOURCES] };
+  const app = await NestFactory.create(AppModule,{cors:true});
+  // const corsOptions = { origin:[process.env.URL_ACCESS_RESOURCES] };
 
-  app.enableCors(corsOptions)
+  // app.enableCors()
  
 
   app.setGlobalPrefix('api');
@@ -27,8 +27,8 @@ async function bootstrap() {
 
 
   const options = new DocumentBuilder()
-    .setTitle('API Congo Work')
-    .setDescription("Description de l'API Congo Work")
+    .setTitle('KDAconnect')
+    .setDescription("Description de l'API KDAconnect")
     .setVersion('1.0') 
     .addBearerAuth()
     .build();

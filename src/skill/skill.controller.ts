@@ -2,7 +2,12 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { SkillService } from './skill.service';
 import { CreateSkillDto } from './dto/create-skill.dto';
 import { UpdateSkillDto } from './dto/update-skill.dto';
+import {
+  ApiBearerAuth,ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('Les Compétences des talents :')
 @Controller('skill')
 export class SkillController {
   constructor(private readonly skillService: SkillService) {}

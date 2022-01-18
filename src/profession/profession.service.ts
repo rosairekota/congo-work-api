@@ -1,15 +1,18 @@
+import { Profession } from './entities/profession.entity';
 import { Injectable } from '@nestjs/common';
 import { CreateProfessionDto } from './dto/create-profession.dto';
 import { UpdateProfessionDto } from './dto/update-profession.dto';
-
+import { ProfessionRepository } from "./profession.repository";
 @Injectable()
 export class ProfessionService {
+  constructor(private readonly professionRepository:ProfessionRepository){}
   create(createProfessionDto: CreateProfessionDto) {
-    return 'This action adds a new profession';
+      this.professionRepository.persistAndFlush(this.professionRepository.create(createProfessionDto))
+    return 'esimbi';
   }
 
-  findAll() {
-    return `This action returns all profession`;
+  async findAll():Promise<Profession[]> {
+    return await this.professionRepository.findAll();
   }
 
   findOne(id: number) {

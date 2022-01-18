@@ -1,3 +1,4 @@
+import { UserRoleEnum } from './../shared/enums/user-role.enum';
 import { JwtService } from '@nestjs/jwt';
 
 import {
@@ -14,15 +15,16 @@ import { SECRET } from '../../config';
 import { CreateUserDto, LoginUserDto, UpdateUserDto } from './dto';
 import { User } from './entities/user.entity';
 import { IUserRO } from './user.interface';
-import { UserRepository } from './user.repository';
-import { UserRoleEnum } from '../shared/enums/user-role.enum';
+import { UserRepository } from './repositories/user.repository';
+import { RoleRepository } from './repositories/role.repository';
+
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository, private readonly jwtService:JwtService) {}
+  constructor(private readonly userRepository: UserRepository, private readonly roleRepository:RoleRepository,private readonly jwtService:JwtService) {}
 
   async findAll(): Promise<User[]> {
-    return this.userRepository.findAll();
+    return await this.userRepository.findAll();
   }
 
   async findOne(loginUserDto: LoginUserDto): Promise<User> {
@@ -38,8 +40,11 @@ export class UserService {
   async create(dto: CreateUserDto): Promise<IUserRO> {
   
     // check uniquen,ss of username/email
-    const { firstName, lastName, username, email, password, roles } = dto;
-    console.log("dto : ",{ firstName, lastName, username, email, password, roles })
+    const { firstName, lastName, username, email, password, role } = dto;
+    console.log("dto : ",{ firstName, lastName, username, email, password, role })
+    const roles=await this.roleRepository.findByName(role as UserRoleEnum)
+    console.log('role:',roles);
+    
     const exists = await this.userRepository.count({
       $or: [{ username }, { email }],
     });
@@ -60,7 +65,7 @@ export class UserService {
     });
     user.saltSecret = await bcrypt.genSalt();
     user.password = await this.encryptPassword(user.password,user.saltSecret)
-    user.roles.add(...roles)
+   user.roles.add(roles)
 
     const errors = await validate(user);
 
@@ -127,6 +132,8 @@ export class UserService {
   }
 
   async authenticate(loginUserDto: LoginUserDto): Promise<IUserRO> {
+    const {email:email_one,password}=loginUserDto
+    const hashPassword=await this.encryptPassword(password);
     const foundUser = await this.userRepository.findOne(loginUserDto);
 
     const errors = { User: " n'a pas été trouvé !" };

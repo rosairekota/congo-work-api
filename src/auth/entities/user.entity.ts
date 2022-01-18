@@ -15,7 +15,7 @@ import {
   wrap,
 } from '@mikro-orm/core';
 import { Article } from '../../post/entities/article.entity';
-import { UserRepository } from '../user.repository';
+import { UserRepository } from '../repositories/user.repository';
 @Unique({properties:["email"]})
 @Entity()
 export class User {
@@ -45,10 +45,10 @@ export class User {
   saltSecret: string;
 
   @Property()
-  bio? :string='';
+  bio? :string;
 
   @Property()
-  profilePhoto? :string='';
+  profilePhoto? :string;
 
   @ManyToMany({entity:() => Role,owner:true,pivotTable:"user_roles"})
   roles:Collection<Role> =new Collection<Role>(this);

@@ -1,5 +1,5 @@
 import { IUserData } from './../user.interface';
-import { UserRepository } from './../user.repository';
+import { UserRepository } from '../repositories/user.repository';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';

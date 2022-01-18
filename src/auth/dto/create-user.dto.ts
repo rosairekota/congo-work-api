@@ -1,25 +1,30 @@
-import { Role } from './../entities/user-role.entity';
-import { IsNotEmpty,IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNotEmpty,IsString,IsIn } from 'class-validator';
 
 export class CreateUserDto {
 
+  @IsString()
   @IsNotEmpty()
-  firstName :string
+  firstName :string;
 
+  @Type(()=> String)
   @IsNotEmpty()
-  lastName :string
+  lastName :string;
 
+  @Type(()=> String)
   @IsNotEmpty()
   username: string;
 
+  @Type(()=> String)
   @IsNotEmpty()
   email: string;
 
+  @Type(()=> String)
   @IsNotEmpty()
   password: string;
 
   @IsNotEmpty()
-  roles:[]
+  role:string
   
 
 }
