@@ -2,7 +2,6 @@ import { UserRoleEnum } from './../shared/enums/user-role.enum';
 import { JwtService } from '@nestjs/jwt';
 
 import {
-  ConflictException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -41,9 +40,11 @@ export class UserService {
   
     // check uniquen,ss of username/email
     const { firstName, lastName, username, email, password, role } = dto;
-    console.log("dto : ",{ firstName, lastName, username, email, password, role })
-    const roles=await this.roleRepository.findByName(role as UserRoleEnum)
-    console.log('role:',roles);
+  
+    const roles= []
+    for (const item of role) {
+      roles.push(await this.roleRepository.findByName(item))
+    }
     
     const exists = await this.userRepository.count({
       $or: [{ username }, { email }],
@@ -60,13 +61,15 @@ export class UserService {
     }
 
     // create new user
-    const user = await this.userRepository.create({
+    const user = this.userRepository.create({
       ...{ firstName, lastName, username, email, password },
     });
     user.saltSecret = await bcrypt.genSalt();
     user.password = await this.encryptPassword(user.password,user.saltSecret)
-   user.roles.add(roles)
-
+    if (roles.length>0) {
+      user.roles.add(...roles)
+    }
+   
     const errors = await validate(user);
 
     if (errors.length > 0) {
@@ -97,7 +100,7 @@ export class UserService {
 
         return this.buildUserRO(user);
       } catch (error) {
-         throw new ConflictException("Une erreur est survenue lors de la creation d'un utilisateur");
+         throw new Error("Une erreur est survenue lors de la creation d'un utilisateur");
          
       }
     }

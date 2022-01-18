@@ -11,7 +11,7 @@ export class TalentController {
 
   @ApiOperation({summary:"Permet de créer un talent"})
   @Post()
-  create(@Body() createTalentDto: CreateTalentDto) {
+  createProfile(@Body() createTalentDto: CreateTalentDto) {
     return this.talentService.create(createTalentDto);
   }
 
