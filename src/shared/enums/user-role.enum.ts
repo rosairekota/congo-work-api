@@ -1,6 +1,6 @@
 export enum UserRoleEnum {
-    ROLE_TALENT='talent',
-    ROLE_ADMIN='admin',
-    ROLE_CLIENT='client',
-    ROLE_SUPER_ADMIN='super'
+    ROLE_SUPER_ADMIN='ROLE_SUPER_ADMIN',
+    ROLE_ADMIN='ROLE_ADMIN',
+    ROLE_CLIENT='ROLE_CLIENT',
+    ROLE_TALENT='ROLE_TALENT',  
 }
