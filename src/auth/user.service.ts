@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { validate } from 'class-validator';
 import * as bcrypt from 'bcrypt';
-import { Collection, wrap } from '@mikro-orm/core';
+import { wrap } from '@mikro-orm/core';
 import { SECRET } from '../../config';
 import { CreateUserDto, LoginUserDto, UpdateUserDto } from './dto';
 import { User } from './entities/user.entity';
@@ -19,6 +19,7 @@ import { UserRepository } from './repositories/user.repository';
 import { RoleRepository } from './repositories/role.repository';
 import { TalentRepository } from '../talent/repositories/talent.repository';
 import { ProfessionRepository } from '../profession/repositories/profession.repository';
+
 
 @Injectable()
 export class UserService {
@@ -34,13 +35,9 @@ export class UserService {
     return await this.userRepository.findAll();
   }
 
-  async findOne(loginUserDto: LoginUserDto): Promise<User> {
-    const findOneOptions = {
-      email: loginUserDto.email,
-      password: await this.encryptPassword(loginUserDto.password),
-    };
-
-    return this.userRepository.findOne(findOneOptions);
+  async findOne(id: number): Promise<User> {
+   
+    return this.userRepository.findOne(id);
   }
 
   async create(dto: CreateUserDto): Promise<IUserRO> {
@@ -52,7 +49,6 @@ export class UserService {
       email,
       password,
       roles,
-      profession,
       
     } = dto;
     
@@ -80,10 +76,7 @@ export class UserService {
         ...{ firstName, lastName, username, email, password },
       });
       user.saltSecret = await bcrypt.genSalt();
-      user.password = await this.encryptPassword(
-        user.password,
-        user.saltSecret,
-      );
+      user.password =  await bcrypt.hash(password, user.saltSecret);
       if (roles.length > 0) {
         user.roles.add(...userRoles);
       }
@@ -101,29 +94,8 @@ export class UserService {
       } else {
       try 
         {
-        for (const role of roles) {
-          switch (role) {
-            case UserRoleEnum.ROLE_TALENT:
-              const professionRepo =
-              await this.professionRepository.finbByTitle(profession.title);
-              const talent = this.talentRepository.create({});
-              talent.profession = professionRepo;
-              talent.user = user;
-              await this.talentRepository.persistAndFlush([user,talent]);
-              console.log('esimbi', professionRepo.id);
-              break;
-
-            case UserRoleEnum.ROLE_CLIENT:
-              await this.userRepository.persistAndFlush([user]);
-              break;
-
-            default:
-              await this.userRepository.persistAndFlush(user);
-              break;
-          }
-        }
-
-        return this.buildUserRO(user);
+        
+        return await this.saveUserByRoles(roles,user,dto)
       }
       catch (e) {
         throw new Error("Echec: Un problème a été constaté lors de la création d'un utilisateur"+e);
@@ -139,7 +111,7 @@ export class UserService {
     wrap(user).assign(dto);
     await this.userRepository.flush();
 
-    return this.buildUserRO(user);
+    return this.buildResponsePayload(user);
   }
 
   async delete(email: string) {
@@ -154,27 +126,35 @@ export class UserService {
       throw new HttpException({ errors }, 401);
     }
 
-    return this.buildUserRO(user);
+    return this.buildResponsePayload(user);
   }
 
   async findByEmail(email: string): Promise<IUserRO> {
     const user = await this.userRepository.findOneOrFail({ email });
-    return this.buildUserRO(user);
+    return this.buildResponsePayload(user);
   }
 
   async authenticate(loginUserDto: LoginUserDto): Promise<IUserRO> {
-    const { email: email_one, password } = loginUserDto;
-    const hashPassword = await this.encryptPassword(password);
-    const foundUser = await this.userRepository.findOne(loginUserDto);
-
+    const { email, password } = loginUserDto;
+   
+    const foundUser = await this.userRepository.findByEmailOrUsername(email)
+    const isValidPassword =  await bcrypt.compare(password, foundUser.password);
+   
     const errors = { User: " n'a pas été trouvé !" };
     if (!foundUser) {
       throw new NotFoundException({ errors }, '401');
+    }else{
+      if (!isValidPassword) {
+        throw new NotFoundException({ User:"Le mot de passe ou email erroné" }, '401');
+        
+      } else {
+
+        return this.buildResponsePayload(foundUser);
+      }
+      //return this.buildResponsePayload(foundUser);
+      
     }
-    const token = await this.generateJWT(foundUser);
-    const { email, username, bio, profilePhoto } = foundUser;
-    const user = { email, token, username, bio, profilePhoto };
-    return { user };
+  
   }
 
   generateJWT(user) {
@@ -193,11 +173,12 @@ export class UserService {
     );
   }
 
-  private buildUserRO(user: User) {
+  private buildResponsePayload(user: User) {
     const userRO = {
       bio: user.bio,
       email: user.email,
       profilePhoto: user.profilePhoto,
+      type:'bearer',
       token: this.generateJWT(user),
       username: user.username,
       roles: user.roles,
@@ -205,18 +186,30 @@ export class UserService {
 
     return { user: userRO };
   }
-  private async encryptPassword(
-    password: string,
-    salt?: string,
-  ): Promise<string> {
-    const saltSecret = await bcrypt.genSalt();
-    let hashPassword = '';
-    if (salt !== '') {
-      hashPassword = await bcrypt.hash(password, salt);
-    } else {
-      hashPassword = await bcrypt.hash(password, saltSecret);
-    }
+ 
+  private async saveUserByRoles(roles:Array<UserRoleEnum> = [], user:User, dto:CreateUserDto){
+    for (const role of roles) {
+    switch (role) {
+      case UserRoleEnum.ROLE_TALENT:
+        const professionRepo =
+        await this.professionRepository.finbByTitle(dto.profession.title);
+        const talent = this.talentRepository.create({});
+        talent.profession = professionRepo;
+        talent.user = user;
+        await this.talentRepository.persistAndFlush([user,talent]);
+        console.log('esimbi', professionRepo.id);
+        break;
 
-    return hashPassword;
+      case UserRoleEnum.ROLE_CLIENT:
+        await this.userRepository.persistAndFlush([user]);
+        break;
+
+      default:
+        await this.userRepository.persistAndFlush(user);
+        break;
+    }
+  
+  }
+  return this.buildResponsePayload(user);
   }
 }
