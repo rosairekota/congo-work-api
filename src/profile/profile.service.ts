@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { User } from '../auth/user.entity';
+import { User } from '../auth/entities/user.entity';
 import { IProfileData, IProfileRO } from './profile.interface';
 import { EntityRepository, FilterQuery } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs'
@@ -22,8 +22,12 @@ export class ProfileService {
     if (user) {
       delete user.password;
     }
-
-    return { profile: user };
+    const {
+      username,
+      bio,
+      profilePhoto,
+    }=user
+    return { profile: {username,bio,profilePhoto} };
   }
 
   async findProfile(id: number, followingUsername: string): Promise<IProfileRO> {
@@ -36,7 +40,7 @@ export class ProfileService {
 
     const profile: IProfileData = {
       bio: foundProfile.bio,
-      image: foundProfile.image,
+      profilePhoto: foundProfile.profilePhoto,
       username: foundProfile.username,
       following: foundProfile.followers.contains(follower),
     };
@@ -62,7 +66,7 @@ export class ProfileService {
     const profile: IProfileData = {
       bio: followingUser.bio,
       following: true,
-      image: followingUser.image,
+      profilePhoto: followingUser.profilePhoto,
       username: followingUser.username,
     };
 
@@ -87,7 +91,7 @@ export class ProfileService {
     const profile: IProfileData = {
       bio: followingUser.bio,
       following: false,
-      image: followingUser.image,
+      profilePhoto: followingUser.profilePhoto,
       username: followingUser.username,
     };
 

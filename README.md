@@ -45,3 +45,16 @@ Now you can start the application witt `yarn start`
 # Authentication
  
 This applications uses JSON Web Token (JWT) to handle authentication. The token is passed with each request using the `Authorization` header with `Token` scheme. The JWT authentication middleware handles the validation and authentication of the token.
+
+trouver un profil:
+
+- type_de_profil
+- durée_estimée
+- lieu
+- description
+
+Developpeur:
+- disponible?
+- titre profil
+- competence: - type_competence
+              - experience

@@ -1,4 +1,4 @@
-import { Article } from './article.entity';
+import { Article } from './entities/article.entity';
 
 interface IComment {
   body: string;
